@@ -57,9 +57,10 @@ class JUImg
         else
         {
             $_error   = 0;
-            $img_name = implode($attr);
             $imgurl   = 'cover';
         }
+
+        $img_name = implode($attr);
 
         $fext        = array();
         $wh          = array();
