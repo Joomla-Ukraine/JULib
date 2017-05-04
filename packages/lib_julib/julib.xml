@@ -8,7 +8,7 @@
     <authorUrl>http://joomla-ua.org</authorUrl>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <copyright>(C) 2006-2017 Joomla! Ukraine. All rights reserved.</copyright>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
     <packager>Joomla! Ukraine</packager>
     <packagerurl>http://joomla-ua.org</packagerurl>
     <files folder="julib">
