@@ -1,14 +1,28 @@
 <?php
 /**
- * @package   Joomla! 2.5/3.x
- * @version   2.x
- * @author    2012-2017 (c)  Denys Nosov (aka Dutch)
- * @author    web-site: www.joomla-ua.org
- * @copyright This module is licensed under a Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 License.
- **/
+ * JULib
+ *
+ * @package          Joomla.Site
+ * @subpackage       julib
+ *
+ * @author           Denys Nosov, denys@joomla-ua.org
+ * @copyright        2014-2017 (C) Joomla! Ukraine, http://joomla-ua.org. All rights reserved.
+ * @license          GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
+/**
+ * JULib library
+ *
+ * @since  2.0
+ */
 class JUImg
 {
+    /**
+     * @param      $url
+     * @param null $attr
+     *
+     * @return string
+     */
     public function Render($url, $attr = null)
     {
         if($url != 'cover')
@@ -21,12 +35,18 @@ class JUImg
             if(preg_match('#^(http|https|ftp)://#i', $url))
             {
                 $headers = @get_headers($url);
-                if(strpos($headers[0], '200') === false) $_error = 1;
+                if(strpos($headers[0], '200') === false)
+                {
+                    $_error = 1;
+                }
             }
             else
             {
                 $url = JPATH_BASE . '/' . $url;
-                if(!file_exists($url)) $_error = 1;
+                if(!file_exists($url))
+                {
+                    $_error = 1;
+                }
             }
 
             $imgfile  = pathinfo($url);
@@ -51,13 +71,25 @@ class JUImg
         $error_image = array();
         foreach ($attr as $whk => $whv)
         {
-            if($whk == 'f') $fext[] = $whv;
+            if($whk == 'f')
+            {
+                $fext[] = $whv;
+            }
 
-            if($whk == 'w' || $whk == 'h') $wh[] = $whv;
+            if($whk == 'w' || $whk == 'h')
+            {
+                $wh[] = $whv;
+            }
 
-            if($whk == 'cache') $img_cache[] = $whv;
+            if($whk == 'cache')
+            {
+                $img_cache[] = $whv;
+            }
 
-            if($whk == 'error_image') $error_image[] = $whv;
+            if($whk == 'error_image')
+            {
+                $error_image[] = $whv;
+            }
         }
 
         $fext      = implode($fext);
@@ -84,6 +116,7 @@ class JUImg
         }
 
         $target = $subfolder . '/' . substr(strtolower($imgurl), 0, 150) . '-' . MD5($url . implode('.', $md5)) . $fext;
+
         $this->MakeDirectory($dir = JPATH_BASE . '/' . $subfolder, $mode = 0777);
 
         if(file_exists(JPATH_BASE . '/' . $target))
@@ -98,19 +131,34 @@ class JUImg
         return $outpute;
     }
 
+    /**
+     * @param      $url
+     * @param      $img_cache
+     * @param      $target
+     * @param null $attr
+     *
+     * @return string
+     */
     public function Create($url, $img_cache, $target, $attr = null)
     {
         include_once(__DIR__ . '/phpthumb/phpthumb.class.php');
         $phpThumb = new JUThumbs();
+
         $phpThumb->resetObject();
 
         $phpThumb->setParameter('config_max_source_pixels', round(max(intval(ini_get('memory_limit')), intval(get_cfg_var('memory_limit'))) * 1048576 / 6));
+
         $phpThumb->setParameter('config_temp_directory', JPATH_BASE . '/' . $img_cache . '/');
         $phpThumb->setParameter('config_cache_directory', JPATH_BASE . '/' . $img_cache . '/');
         $phpThumb->setCacheDirectory();
+
         $phpThumb->setParameter('config_cache_maxfiles', '0');
         $phpThumb->setParameter('config_cache_maxsize', '0');
         $phpThumb->setParameter('config_cache_maxage', '0');
+
+        $phpThumb->setParameter('config_error_bgcolor', 'FAFAFA');
+        $phpThumb->setParameter('config_error_textcolor', '770000');
+
         $phpThumb->setParameter('config_nohotlink_enabled', false);
 
         if($url == 'cover')
@@ -118,7 +166,10 @@ class JUImg
             $cover = array();
             foreach ($attr as $whk => $whv)
             {
-                if($whk == 'cover') $cover[] = $whv;
+                if($whk == 'cover')
+                {
+                    $cover[] = $whv;
+                }
             }
 
             $phpThumb->setSourceFilename(JPATH_BASE . '/libraries/julib/blank.png');
@@ -144,7 +195,10 @@ class JUImg
         }
 
         $imagemagick = '';
-        if(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') $imagemagick = 'C:/ImageMagick/convert.exe';
+        if(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')
+        {
+            $imagemagick = 'C:/ImageMagick/convert.exe';
+        }
 
         $phpThumb->setParameter('config_imagemagick_path', $imagemagick);
         $phpThumb->setParameter('config_prefer_imagemagick', true);
@@ -153,7 +207,10 @@ class JUImg
         $outpute = '';
         if($phpThumb->GenerateThumbnail())
         {
-            if($phpThumb->RenderToFile(JPATH_BASE . '/' . $target)) $outpute = $target;
+            if($phpThumb->RenderToFile(JPATH_BASE . '/' . $target))
+            {
+                $outpute = $target;
+            }
 
             $phpThumb->purgeTempFiles();
         }
@@ -161,6 +218,12 @@ class JUImg
         return $outpute;
     }
 
+    /**
+     * @param $dir
+     * @param $mode
+     *
+     * @return bool
+     */
     public function MakeDirectory($dir, $mode)
     {
         if(is_dir($dir) || @mkdir($dir, $mode))
@@ -178,7 +241,10 @@ class JUImg
             return true;
         }
 
-        if(!$this->MakeDirectory(dirname($dir), $mode)) return false;
+        if(!$this->MakeDirectory(dirname($dir), $mode))
+        {
+            return false;
+        }
 
         return @mkdir($dir, $mode);
     }
