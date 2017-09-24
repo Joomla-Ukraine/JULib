@@ -2,13 +2,13 @@
 <extension type="library" version="2.5" method="upgrade">
     <name>JULib</name>
     <libraryname>julib</libraryname>
-    <creationDate>05.05.2017</creationDate>
+    <creationDate>24.09.2017</creationDate>
     <author>Denys Nosov</author>
     <authorEmail>denys@joomla-ua.org</authorEmail>
     <authorUrl>http://joomla-ua.org</authorUrl>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <copyright>(C) 2006-2017 Joomla! Ukraine. All rights reserved.</copyright>
-    <version>2.6.0</version>
+    <version>2.7.0</version>
     <packager>Joomla! Ukraine</packager>
     <packagerurl>http://joomla-ua.org</packagerurl>
     <files folder="julib">

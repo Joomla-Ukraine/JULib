@@ -215,7 +215,7 @@ class JUThumbs {
 	var $issafemode       = null;
 	var $php_memory_limit = null;
 
-	var $phpthumb_version = '1.7.14-201608101311';
+	var $phpthumb_version = '1.7.15-201709210936';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -230,9 +230,9 @@ class JUThumbs {
 
 		foreach (array(ini_get('memory_limit'), get_cfg_var('memory_limit')) as $php_config_memory_limit) {
 			if (strlen($php_config_memory_limit)) {
-				if (substr($php_config_memory_limit, -1, 1) == 'G') { // PHP memory limit expressed in Gigabytes
+				if (strtoupper(substr($php_config_memory_limit, -1, 1)) == 'G') { // PHP memory limit expressed in Gigabytes
 					$php_config_memory_limit = intval(substr($php_config_memory_limit, 0, -1)) * 1073741824;
-				} elseif (substr($php_config_memory_limit, -1, 1) == 'M') { // PHP memory limit expressed in Megabytes
+				} elseif (strtoupper(substr($php_config_memory_limit, -1, 1)) == 'M') { // PHP memory limit expressed in Megabytes
 					$php_config_memory_limit = intval(substr($php_config_memory_limit, 0, -1)) * 1048576;
 				}
 				$this->php_memory_limit = max($this->php_memory_limit, $php_config_memory_limit);
@@ -1339,16 +1339,16 @@ class JUThumbs {
 			$AbsoluteFilename = preg_replace('#^'.preg_quote($this->realPathSafe($this->config_document_root)).'#i', str_replace('\\', '\\\\', $this->realPathSafe($this->config_document_root)), $AbsoluteFilename);
 			$AbsoluteFilename = str_replace(DIRECTORY_SEPARATOR, '/', $AbsoluteFilename);
 		}
-		$AbsoluteFilename = $this->resolvePath($AbsoluteFilename, $this->config_additional_allowed_dirs);
-		if (!$this->config_allow_src_above_docroot && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($this->config_document_root))).'#', $AbsoluteFilename)) {
+		$resolvedAbsoluteFilename = $this->resolvePath($AbsoluteFilename, $this->config_additional_allowed_dirs);
+		if (!$this->config_allow_src_above_docroot && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($this->config_document_root))).'#', $resolvedAbsoluteFilename)) {
 			$this->DebugMessage('!$this->config_allow_src_above_docroot therefore setting "'.$AbsoluteFilename.'" (outside "'.$this->realPathSafe($this->config_document_root).'") to null', __FILE__, __LINE__);
 			return false;
 		}
-		if (!$this->config_allow_src_above_phpthumb && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/',  __DIR__ )).'#', $AbsoluteFilename)) {
+		if (!$this->config_allow_src_above_phpthumb && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/',  __DIR__ )).'#', $resolvedAbsoluteFilename)) {
 			$this->DebugMessage('!$this->config_allow_src_above_phpthumb therefore setting "'.$AbsoluteFilename.'" (outside "'. __DIR__ .'") to null', __FILE__, __LINE__);
 			return false;
 		}
-		return $AbsoluteFilename;
+		return $resolvedAbsoluteFilename;
 	}
 
 
@@ -1655,6 +1655,7 @@ class JUThumbs {
 
 		$commandline = $this->ImageMagickCommandlineBase();
 		if ($commandline) {
+			$commandline .= ' '.phpthumb_functions::escapeshellarg_replacement(preg_replace('#[/\\\\]#', DIRECTORY_SEPARATOR, $this->sourceFilename).(($outputFormat == 'gif') ? '' : '['.intval($this->sfn).']')); // [0] means first frame of (GIF) animation, can be ignored
 			if ($IMtempfilename = $this->phpThumb_tempnam()) {
 				$IMtempfilename = $this->realPathSafe($IMtempfilename);
 
@@ -1677,11 +1678,6 @@ class JUThumbs {
 				}
 
 
-				if (!is_null($this->dpi) && $this->ImageMagickSwitchAvailable('density')) {
-					// for vector source formats only (WMF, PDF, etc)
-					$commandline .= ' -flatten';
-					$commandline .= ' -density '.phpthumb_functions::escapeshellarg_replacement($this->dpi);
-				}
 				ob_start();
 				$getimagesize = getimagesize($this->sourceFilename);
 				$GetImageSizeError = ob_get_contents();
@@ -1690,6 +1686,16 @@ class JUThumbs {
 					$this->DebugMessage('getimagesize('.$this->sourceFilename.') SUCCEEDED: '.print_r($getimagesize, true), __FILE__, __LINE__);
 				} else {
 					$this->DebugMessage('getimagesize('.$this->sourceFilename.') FAILED with error "'.$GetImageSizeError.'"', __FILE__, __LINE__);
+				}
+				if (!is_null($this->dpi) && $this->ImageMagickSwitchAvailable('density')) {
+					// for vector source formats only (WMF, PDF, etc)
+					if (is_array($getimagesize) && isset($getimagesize[2]) && ($getimagesize[2] == IMAGETYPE_PNG)) {
+						// explicitly exclude PNG from "-flatten" to make sure transparency is preserved
+						// https://github.com/JamesHeinrich/phpThumb/issues/65
+					} else {
+						$commandline .= ' -flatten';
+						$commandline .= ' -density '.phpthumb_functions::escapeshellarg_replacement($this->dpi);
+					}
 				}
 				if (is_array($getimagesize)) {
 					$this->DebugMessage('getimagesize('.$this->sourceFilename.') returned [w='.$getimagesize[0].';h='.$getimagesize[1].';f='.$getimagesize[2].']', __FILE__, __LINE__);
@@ -1729,7 +1735,11 @@ class JUThumbs {
 							$sideY = phpthumb_functions::nonempty_min(                     $this->source_height, $hAll, round($wAll / $zcAR));
 
 							$thumbnailH = round(max($sideY, ($sideY * $zcAR) / $imAR));
-							$commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement(($IMuseExplicitImageOutputDimensions ? $thumbnailH : '').'x'.$thumbnailH);
+							if ($this->aoe == 1) {
+								$commandline .= ' -'.$IMresizeParameter.' "'.$wAll.'x'.$hAll.'^"';
+							} else {
+								$commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement(($IMuseExplicitImageOutputDimensions ? $thumbnailH : '').'x'.$thumbnailH);
+							}
 
 							switch (strtoupper($this->zc)) {
 								case 'T':
@@ -1810,13 +1820,23 @@ if (false) {
 						} else {
 
 							if ($this->iar && (intval($this->w) > 0) && (intval($this->h) > 0)) {
+
 								list($nw, $nh) = phpthumb_functions::TranslateWHbyAngle($this->w, $this->h, $this->ra);
 								$nw = ((round($nw) != 0) ? round($nw) : '');
 								$nh = ((round($nh) != 0) ? round($nh) : '');
 								$commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement($nw.'x'.$nh.'!');
+
+							} elseif ($this->far && (intval($this->w) > 0) && (intval($this->h) > 0)) {
+
+								$commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement(phpthumb_functions::nonempty_min($this->w, $getimagesize[0]).'x'.phpthumb_functions::nonempty_min($this->h, $getimagesize[1]));
+								$commandline .= ' -gravity center';
+								$commandline .= ' -background '.phpthumb_functions::escapeshellarg_replacement('#'.$this->bg);
+								$commandline .= ' -extent '.phpthumb_functions::escapeshellarg_replacement($this->w.'x'.$this->h);
+
 							} else {
-								$this->w = ((($this->aoe || $this->far) && $this->w) ? $this->w : ($this->w ? phpthumb_functions::nonempty_min($this->w, $getimagesize[0]) : ''));
-								$this->h = ((($this->aoe || $this->far) && $this->h) ? $this->h : ($this->h ? phpthumb_functions::nonempty_min($this->h, $getimagesize[1]) : ''));
+
+								$this->w = (($this->aoe && $this->w) ? $this->w : ($this->w ? phpthumb_functions::nonempty_min($this->w, $getimagesize[0]) : ''));
+								$this->h = (($this->aoe && $this->h) ? $this->h : ($this->h ? phpthumb_functions::nonempty_min($this->h, $getimagesize[1]) : ''));
 								if ($this->w || $this->h) {
 									if ($IMuseExplicitImageOutputDimensions) {
 										if ($this->w && !$this->h) {
@@ -1830,6 +1850,7 @@ if (false) {
 									$nh = ((round($nh) != 0) ? round($nh) : '');
 									$commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement($nw.'x'.$nh);
 								}
+
 							}
 						}
 					}
@@ -2233,7 +2254,6 @@ if (false) {
 						}
 					}
 				}
-				$commandline .= ' '.phpthumb_functions::escapeshellarg_replacement(preg_replace('#[/\\\\]#', DIRECTORY_SEPARATOR, $this->sourceFilename).(($outputFormat == 'gif') ? '' : '['.intval($this->sfn).']')); // [0] means first frame of (GIF) animation, can be ignored
 				$commandline .= ' '.$outputFormat.':'.phpthumb_functions::escapeshellarg_replacement($IMtempfilename);
 				if (!$this->iswindows) {
 					$commandline .= ' 2>&1';
@@ -4341,11 +4361,10 @@ if (false) {
 	}
 
 	function InitializeTempDirSetting() {
-		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : (function_exists('sys_get_temp_dir') ? sys_get_temp_dir() : '')); // sys_get_temp_dir added in PHP v5.2.1
-		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : getenv('TMPDIR'));
-		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : getenv('TMP'));
-		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : ini_get('upload_tmp_dir'));
-		$this->config_temp_directory = $this->realPathSafe($this->config_temp_directory);
+		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : $this->realPathSafe((function_exists('sys_get_temp_dir') ? sys_get_temp_dir() : ''))); // sys_get_temp_dir added in PHP v5.2.1
+		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : $this->realPathSafe(ini_get('upload_tmp_dir')));
+		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : $this->realPathSafe(getenv('TMPDIR')));
+		$this->config_temp_directory = ($this->config_temp_directory ? $this->config_temp_directory : $this->realPathSafe(getenv('TMP')));
 		return true;
 	}
 
