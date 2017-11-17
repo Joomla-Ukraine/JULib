@@ -6,9 +6,11 @@
  * @subpackage       julib
  *
  * @author           Denys Nosov, denys@joomla-ua.org
- * @copyright        2014-2017 (C) Joomla! Ukraine, http://joomla-ua.org. All rights reserved.
+ * @copyright        2014-2017 (C) Joomla! Ukraine, https://joomla-ua.org. All rights reserved.
  * @license          GNU General Public License version 2 or later; see LICENSE.txt
  */
+
+include_once(__DIR__ . '/phpthumb/phpthumb.class.php');
 
 /**
  * JULib library
@@ -17,13 +19,13 @@
  */
 class JUImg
 {
-    /**
-     * @param      $url
-     * @param null $attr
-     *
-     * @return string
-     */
-    public function Render($url, $attr = null)
+	/**
+	 * @param      $url
+	 * @param null $attr
+	 *
+	 * @return string
+	 */
+	public function Render($url, $attr = null)
     {
         if($url != 'cover')
         {
@@ -54,7 +56,7 @@ class JUImg
 
             $imgurl = strtolower($img_name);
             $imgurl = preg_replace("#[[:punct:]]#", "", $imgurl);
-            $imgurl = preg_replace("#[а-я]#isu", "", $imgurl);
+            $imgurl = preg_replace("#[а-яА-Я]#isu", "", $imgurl);
             $imgurl = str_replace(" +", "_", $imgurl);
             $imgurl = str_replace(" ", "", $imgurl);
         }
@@ -69,6 +71,7 @@ class JUImg
         $wh          = array();
         $img_cache   = array();
         $error_image = array();
+
         foreach ($attr as $whk => $whv)
         {
             if($whk == 'f')
@@ -108,6 +111,7 @@ class JUImg
         $subfolder = $img_cache . '/' . $wh . '/' . substr(strtolower(MD5($img_name)), -1);
 
         $md5 = array();
+
         foreach ($attr as $k => $v)
         {
             $f     = explode("_", $k);
@@ -131,25 +135,24 @@ class JUImg
         return $outpute;
     }
 
-    /**
-     * @param      $url
-     * @param      $img_cache
-     * @param      $target
-     * @param null $attr
-     *
-     * @return string
-     */
-    public function Create($url, $img_cache, $target, $attr = null)
+	/**
+	 * @param      $url
+	 * @param      $img_cache
+	 * @param      $target
+	 * @param null $attr
+	 *
+	 * @return string
+	 */
+	public function Create($url, $img_cache, $target, $attr = null)
     {
-        include_once(__DIR__ . '/phpthumb/phpthumb.class.php');
         $phpThumb = new JUThumbs();
 
         $phpThumb->resetObject();
 
         $phpThumb->setParameter('config_max_source_pixels', round(max(intval(ini_get('memory_limit')), intval(get_cfg_var('memory_limit'))) * 1048576 / 6));
-
         $phpThumb->setParameter('config_temp_directory', JPATH_BASE . '/' . $img_cache . '/');
         $phpThumb->setParameter('config_cache_directory', JPATH_BASE . '/' . $img_cache . '/');
+
         $phpThumb->setCacheDirectory();
 
         $phpThumb->setParameter('config_cache_maxfiles', '0');
@@ -164,6 +167,7 @@ class JUImg
         if($url == 'cover')
         {
             $cover = array();
+
             foreach ($attr as $whk => $whv)
             {
                 if($whk == 'cover')
@@ -218,13 +222,13 @@ class JUImg
         return $outpute;
     }
 
-    /**
-     * @param $dir
-     * @param $mode
-     *
-     * @return bool
-     */
-    public function MakeDirectory($dir, $mode)
+	/**
+	 * @param $dir
+	 * @param $mode
+	 *
+	 * @return bool
+	 */
+	public function MakeDirectory($dir, $mode)
     {
         if(is_dir($dir) || @mkdir($dir, $mode))
         {
