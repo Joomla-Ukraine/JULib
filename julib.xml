@@ -2,15 +2,15 @@
 <extension type="library" version="2.5" method="upgrade">
     <name>JULib</name>
     <libraryname>julib</libraryname>
-    <creationDate>24.09.2017</creationDate>
+    <creationDate>17.11.2017</creationDate>
     <author>Denys Nosov</author>
     <authorEmail>denys@joomla-ua.org</authorEmail>
-    <authorUrl>http://joomla-ua.org</authorUrl>
+    <authorUrl>https://joomla-ua.org</authorUrl>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <copyright>(C) 2006-2017 Joomla! Ukraine. All rights reserved.</copyright>
-    <version>2.7.0</version>
+    <version>2.7.1</version>
     <packager>Joomla! Ukraine</packager>
-    <packagerurl>http://joomla-ua.org</packagerurl>
+    <packagerurl>https://joomla-ua.org</packagerurl>
     <files folder="julib">
         <folder>phpthumb</folder>
         <file>image.php</file>
@@ -19,6 +19,6 @@
         <file>index.html</file>
     </files>
     <updateservers>
-        <server type="extension" priority="1" name="julib">http://joomla-ua.org/update/lib/julib.xml</server>
+        <server type="extension" priority="1" name="julib">https://joomla-ua.org/update/lib/julib.xml</server>
     </updateservers>
 </extension>
