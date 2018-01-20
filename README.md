@@ -95,3 +95,7 @@ echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
 | dpi | Dots Per Inch - input DPI setting when importing from vector image format such as PDF, WMF, etc
 | sia | Save Image As - default filename to save generated image as. Specify the base filename, the extension (eg: ".png") will be automatically added|
 |maxb | MAXimum Byte size - output quality is auto-set to fit thumbnail into "maxb" bytes  (compression quality is adjusted for JPEG, bit depth is adjusted for PNG and GIF)|
+
+## License
+
+GNU General Public License version 2 or later; see [LICENSE.md](LICENSE.md)
