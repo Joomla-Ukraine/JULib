@@ -49,7 +49,7 @@ echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
 
 ```
 
-##Parameters
+## Parameters
 
 | Command | Description |
 | --- | --- |
