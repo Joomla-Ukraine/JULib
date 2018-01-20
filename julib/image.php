@@ -6,7 +6,7 @@
  * @subpackage       julib
  *
  * @author           Denys Nosov, denys@joomla-ua.org
- * @copyright        2014-2017 (C) Joomla! Ukraine, https://joomla-ua.org. All rights reserved.
+ * @copyright        2014-2018 (C) Joomla! Ukraine, https://joomla-ua.org. All rights reserved.
  * @license          GNU General Public License version 2 or later; see LICENSE.txt
  */
 
