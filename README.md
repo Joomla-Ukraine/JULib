@@ -1,9 +1,24 @@
 # JULib
 
 Create thumbs for Joomla! extension or stand-alone use.
+JULib is PHP wrapper for [phpThumb()](https://github.com/JamesHeinrich/phpThumb) Class by James Heinrich.
+ 
+## Demo (All thumbs)
+
+* [Bad Android](https://bad-android.com)
+* [Високий замок](https://wz.lviv.ua)
+* [Львівська міська рада](http://city-adm.lviv.ua)
+
+## Use in Joomla! Extension
+
+* [JUNewsUltra](https://github.com/Joomla-Ukraine/JUNewsUltra)
+* [JUMultiThumb](https://github.com/Joomla-Ukraine/JUMultiThumb)
+* JURSSPublisher
 
 ## Code Example
 ### Joomla! Integration
+
+Install library from Joomla! Extension Manager. Code for use in your extension.
 
 ```
 
