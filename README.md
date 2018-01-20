@@ -51,23 +51,35 @@ $JUImg = new JUImg();
 
 $image = 'images/sampledata/fruitshop/apple.jpg'
   
-$imgparams = array(
+$options = array(
   	'w'     => '300',
   	'h'     => '100',
   	'q'     => '77',
   	'cache' => 'img'
 );
   
-$thumb = $JUImg->Render($image, $imgparams);
+$thumb = $JUImg->Render($image, $options);
 
 echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
 
 ```
 
-## Parameters
+## Options
+
+Add option to this array:
+
+```
+$options = array(
+  	'w'     => '300',
+  	'h'     => '100',
+  	'q'     => '77',
+  	'cache' => 'img'
+);
+```
 
 | Command | Description |
 | --- | --- |
+| cache | folder for thumbnails|
 |   w | max width of output thumbnail in pixels|
 |   h | max height of output thumbnail in pixels|
 |  wp | max width for portrait images|
