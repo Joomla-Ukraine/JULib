@@ -27,14 +27,14 @@ $JUImg = new JUImg();
 
 $image = 'images/sampledata/fruitshop/apple.jpg'
   
-$imgparams = array(
+$options = array(
   	'w'     => '300',
   	'h'     => '100',
   	'q'     => '77',
   	'cache' => 'img'
 );
   
-$thumb = $JUImg->Render($image, $imgparams);
+$thumb = $JUImg->Render($image, $options);
 
 echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
 
