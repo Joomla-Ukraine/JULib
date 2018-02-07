@@ -10,7 +10,7 @@
  * @license          GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-include_once(__DIR__ . '/phpthumb/phpthumb.class.php');
+include_once __DIR__ . '/phpthumb/phpthumb.class.php';
 
 /**
  * JULib library
@@ -27,7 +27,7 @@ class JUImg
 	 */
 	public function Render($url, $attr = null)
     {
-        if($url != 'cover')
+        if($url !== 'cover')
         {
             $url = trim($url, '/');
             $url = trim($url);
@@ -55,10 +55,15 @@ class JUImg
             $img_name = $imgfile['filename'];
 
             $imgurl = strtolower($img_name);
-            $imgurl = preg_replace("#[[:punct:]]#", "", $imgurl);
-            $imgurl = preg_replace("#[а-яА-Я]#isu", "", $imgurl);
-            $imgurl = str_replace(" +", "_", $imgurl);
-            $imgurl = str_replace(" ", "", $imgurl);
+            $imgurl = preg_replace('#[[:punct:]]#', '', $imgurl);
+            $imgurl = preg_replace('#[а-яА-Я]#isu', '', $imgurl);
+	        $imgurl = str_replace(array(
+		        ' +',
+		        ' '
+	        ), array(
+		        '_',
+		        ''
+	        ), $imgurl);
         }
         else
         {
@@ -72,28 +77,31 @@ class JUImg
         $img_cache   = array();
         $error_image = array();
 
-        foreach ($attr as $whk => $whv)
-        {
-            if($whk == 'f')
-            {
-                $fext[] = $whv;
-            }
+	    if(!empty($attr))
+	    {
+		    foreach ($attr as $whk => $whv)
+		    {
+		        if($whk == 'f')
+		        {
+		            $fext[] = $whv;
+		        }
 
-            if($whk == 'w' || $whk == 'h')
-            {
-                $wh[] = $whv;
-            }
+		        if($whk == 'w' || $whk == 'h')
+		        {
+		            $wh[] = $whv;
+		        }
 
-            if($whk == 'cache')
-            {
-                $img_cache[] = $whv;
-            }
+		        if($whk == 'cache')
+		        {
+		            $img_cache[] = $whv;
+		        }
 
-            if($whk == 'error_image')
-            {
-                $error_image[] = $whv;
-            }
-        }
+		        if($whk == 'error_image')
+		        {
+		            $error_image[] = $whv;
+		        }
+		    }
+	    }
 
         $fext      = implode($fext);
         $fext      = '.' . ($fext == '' ? 'jpg' : $fext);
@@ -108,18 +116,21 @@ class JUImg
 
         $wh        = implode('x', $wh);
         $wh        = ($wh == '' ? '0' : $wh);
-        $subfolder = $img_cache . '/' . $wh . '/' . substr(strtolower(MD5($img_name)), -1);
+        $subfolder = $img_cache . '/' . $wh . '/' . substr(strtolower(md5($img_name)), -1);
 
         $md5 = array();
 
-        foreach ($attr as $k => $v)
-        {
-            $f     = explode("_", $k);
-            $k     = $f[0];
-            $md5[] = $k . $v;
-        }
+	    if(!empty($attr))
+	    {
+		    foreach ($attr as $k => $v)
+		    {
+		        $f     = explode('_', $k);
+		        $k     = $f[0];
+		        $md5[] = $k . $v;
+		    }
+	    }
 
-        $target = $subfolder . '/' . substr(strtolower($imgurl), 0, 150) . '-' . MD5($url . implode('.', $md5)) . $fext;
+        $target = $subfolder . '/' . substr(strtolower($imgurl), 0, 150) . '-' . md5($url . implode('.', $md5)) . $fext;
 
         $this->MakeDirectory($dir = JPATH_BASE . '/' . $subfolder, $mode = 0777);
 
@@ -149,7 +160,7 @@ class JUImg
 
         $phpThumb->resetObject();
 
-        $phpThumb->setParameter('config_max_source_pixels', round(max(intval(ini_get('memory_limit')), intval(get_cfg_var('memory_limit'))) * 1048576 / 6));
+        $phpThumb->setParameter('config_max_source_pixels', round(max((int) ini_get('memory_limit'), (int) get_cfg_var('memory_limit')) * 1048576 / 6));
         $phpThumb->setParameter('config_temp_directory', JPATH_BASE . '/' . $img_cache . '/');
         $phpThumb->setParameter('config_cache_directory', JPATH_BASE . '/' . $img_cache . '/');
 
@@ -168,13 +179,16 @@ class JUImg
         {
             $cover = array();
 
-            foreach ($attr as $whk => $whv)
-            {
-                if($whk == 'cover')
-                {
-                    $cover[] = $whv;
-                }
-            }
+	        if(!empty($attr))
+	        {
+		        foreach ($attr as $whk => $whv)
+		        {
+		            if($whk == 'cover')
+		            {
+		                $cover[] = $whv;
+		            }
+		        }
+	        }
 
             $phpThumb->setSourceFilename(JPATH_BASE . '/libraries/julib/blank.png');
             $phpThumb->setParameter('fltr', 'clr|' . implode($cover));
@@ -192,7 +206,7 @@ class JUImg
         {
             foreach ($attr as $k => $v)
             {
-                $f = explode("_", $k);
+                $f = explode('_', $k);
                 $k = $f[0];
                 $phpThumb->setParameter($k, $v);
             }
@@ -230,15 +244,15 @@ class JUImg
 	 */
 	public function MakeDirectory($dir, $mode)
     {
-        if(is_dir($dir) || @mkdir($dir, $mode))
+        if(@mkdir($dir, $mode) || is_dir($dir))
         {
             $indexfile    = $dir . '/index.html';
             $indexcontent = '<!DOCTYPE html><title></title>';
 
             if(!file_exists($indexfile))
             {
-                $file = fopen($indexfile, 'w');
-                fputs($file, $indexcontent);
+                $file = fopen($indexfile, 'wb');
+                fwrite($file, $indexcontent);
                 fclose($file);
             }
 
