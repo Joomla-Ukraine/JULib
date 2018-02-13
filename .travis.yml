@@ -1,0 +1,32 @@
+# Forces new Travis-CI Infrastructure
+sudo: false
+
+language: php
+
+# list any PHP version you want to test against
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - hhvm
+
+env:
+  global:
+    - RUN_PHPCS="no"
+
+matrix:
+  include:
+    - php: 5.3
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
+      env: RUN_PHPCS="yes"
+    - php: 7.0
+    - php: hhvm
+  allow_failures:
+    - php: 7.2
+    - php: nightly
