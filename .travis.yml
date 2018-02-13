@@ -16,31 +16,17 @@ php:
 
 env:
   global:
-    - RUN_UNIT_TESTS="yes"
+    - RUN_PHPCS="no"
 
 matrix:
-  fast_finish: true
   include:
-    - php: 7.0
-      env: INSTALL_APCU="yes" INSTALL_MEMCACHE="no"
-    - php: 7.1
-      env: INSTALL_APCU="yes" INSTALL_MEMCACHE="no"
-    # Requires older Precise image
     - php: 5.3
-      env: INSTALL_APC="yes"
-      sudo: true
-      dist: precise
-    # The new Trusty image has issues with running APC, do not enable it here
     - php: 5.4
-      env: INSTALL_APC="no"
     - php: 5.5
-      env: INSTALL_APCU="yes"
     - php: 5.6
-      env: INSTALL_APCU="yes"
-    - php: 7.2
-      env: INSTALL_APCU="yes" INSTALL_MEMCACHE="no"
-    - php: nightly
-      env: INSTALL_APCU="yes" INSTALL_MEMCACHE="no"
+      env: RUN_PHPCS="yes"
+    - php: 7.0
+    - php: hhvm
   allow_failures:
     - php: 7.2
     - php: nightly
