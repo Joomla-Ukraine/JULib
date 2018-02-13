@@ -213,7 +213,7 @@ class JUImg
         }
 
         $imagemagick = '';
-        if(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')
+        if(0 === stripos(PHP_OS, 'WIN'))
         {
             $imagemagick = 'C:/ImageMagick/convert.exe';
         }
