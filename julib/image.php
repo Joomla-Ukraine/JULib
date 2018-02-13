@@ -116,7 +116,7 @@ class JUImg
 
         $wh        = implode('x', $wh);
         $wh        = ($wh == '' ? '0' : $wh);
-        $subfolder = $img_cache . '/' . $wh . '/' . substr(strtolower(md5($img_name)), -1);
+        $subfolder = $img_cache . '/' . $wh . '/' . strtolower(substr(md5($img_name), -1));
 
         $md5 = array();
 
@@ -130,7 +130,7 @@ class JUImg
 		    }
 	    }
 
-        $target = $subfolder . '/' . substr(strtolower($imgurl), 0, 150) . '-' . md5($url . implode('.', $md5)) . $fext;
+        $target = $subfolder . '/' . strtolower(substr($imgurl, 0, 150)) . '-' . md5($url . implode('.', $md5)) . $fext;
 
         $this->MakeDirectory($dir = JPATH_BASE . '/' . $subfolder, $mode = 0777);
 
