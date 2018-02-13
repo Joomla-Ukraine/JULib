@@ -81,22 +81,22 @@ class JUImg
 	    {
 		    foreach ($attr as $whk => $whv)
 		    {
-		        if($whk == 'f')
+		        if($whk === 'f')
 		        {
 		            $fext[] = $whv;
 		        }
 
-		        if($whk == 'w' || $whk == 'h')
+		        if($whk === 'w' || $whk === 'h')
 		        {
 		            $wh[] = $whv;
 		        }
 
-		        if($whk == 'cache')
+		        if($whk === 'cache')
 		        {
 		            $img_cache[] = $whv;
 		        }
 
-		        if($whk == 'error_image')
+		        if($whk === 'error_image')
 		        {
 		            $error_image[] = $whv;
 		        }
@@ -108,7 +108,7 @@ class JUImg
         $img_cache = implode($img_cache);
         $img_cache = ($img_cache == '' ? 'cache' : $img_cache);
 
-        if($_error == 1)
+        if($_error === '1')
         {
             $error_image = implode($error_image);
             $url         = ($error_image == '' ? JPATH_BASE . '/libraries/julib/noimage.png' : $error_image);
@@ -175,7 +175,7 @@ class JUImg
 
         $phpThumb->setParameter('config_nohotlink_enabled', false);
 
-        if($url == 'cover')
+        if($url === 'cover')
         {
             $cover = array();
 
@@ -183,7 +183,7 @@ class JUImg
 	        {
 		        foreach ($attr as $whk => $whv)
 		        {
-		            if($whk == 'cover')
+		            if($whk === 'cover')
 		            {
 		                $cover[] = $whv;
 		            }
