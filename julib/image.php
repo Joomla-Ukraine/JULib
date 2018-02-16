@@ -20,12 +20,12 @@ include_once __DIR__ . '/phpthumb/phpthumb.class.php';
 class JUImg
 {
 	/**
-	 * @param      $url
-	 * @param null $attr
+	 * @param       $url
+	 * @param array $attr
 	 *
 	 * @return string
 	 */
-	public function Render($url, $attr = null)
+	public function Render($url, $attr = array())
     {
         if($url !== 'cover')
         {
@@ -77,7 +77,7 @@ class JUImg
         $img_cache   = array();
         $error_image = array();
 
-	    if(!empty($attr))
+	    if(!empty($attr) && is_array($attr))
 	    {
 		    foreach ($attr as $whk => $whv)
 		    {
@@ -120,7 +120,7 @@ class JUImg
 
         $md5 = array();
 
-	    if(!empty($attr))
+	    if(!empty($attr) && is_array($attr))
 	    {
 		    foreach ($attr as $k => $v)
 		    {
@@ -147,14 +147,14 @@ class JUImg
     }
 
 	/**
-	 * @param      $url
-	 * @param      $img_cache
-	 * @param      $target
-	 * @param null $attr
+	 * @param       $url
+	 * @param       $img_cache
+	 * @param       $target
+	 * @param array $attr
 	 *
 	 * @return string
 	 */
-	public function Create($url, $img_cache, $target, $attr = null)
+	public function Create($url, $img_cache, $target, $attr = array())
     {
         $phpThumb = new JUThumbs();
 
@@ -179,7 +179,7 @@ class JUImg
         {
             $cover = array();
 
-	        if(!empty($attr))
+	        if(!empty($attr) && is_array($attr))
 	        {
 		        foreach ($attr as $whk => $whv)
 		        {
