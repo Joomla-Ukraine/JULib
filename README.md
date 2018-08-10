@@ -21,47 +21,43 @@ JULib is PHP wrapper for [phpThumb()](https://github.com/JamesHeinrich/phpThumb)
 Install library from Joomla! Extension Manager. Code for use in your extension.
 
 ```
-
 require_once(JPATH_SITE . '/libraries/julib/image.php');
 $JUImg = new JUImg();
 
 $image = 'images/sampledata/fruitshop/apple.jpg'
   
-$options = array(
+$options = [
   	'w'     => '300',
   	'h'     => '100',
   	'q'     => '77',
   	'cache' => 'img'
-);
+];
   
 $thumb = $JUImg->Render($image, $options);
 
 echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
-
 ```
 	 
 ### Stand-alone usage
 
 ```
-
-define('JPATH_BASE', $_SERVER['DOCUMENT_ROOT']);
-
 require_once(JPATH_SITE . '/libraries/julib/image.php');
-$JUImg = new JUImg();
+
+$root_path = $_SERVER['DOCUMENT_ROOT'];
+$JUImg 	   = new JUImg( $root_path );
 
 $image = 'images/sampledata/fruitshop/apple.jpg'
   
-$options = array(
+$options = [
   	'w'     => '300',
   	'h'     => '100',
   	'q'     => '77',
   	'cache' => 'img'
-);
+];
   
 $thumb = $JUImg->Render($image, $options);
 
 echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
-
 ```
 
 ## Options
@@ -69,12 +65,12 @@ echo '<img src=". $thumb ."' alt="Apple" width="300" height="100">';
 Add option to this array:
 
 ```
-$options = array(
+$options = [
   	'w'     => '300',
   	'h'     => '100',
   	'q'     => '77',
   	'cache' => 'img'
-);
+];
 ```
 
 | Command | Description |
