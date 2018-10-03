@@ -72,7 +72,13 @@ class JUImg
 			$imgurl   = strtolower($img_name);
 			$imgurl   = preg_replace('#[[:punct:]]#', '', $imgurl);
 			$imgurl   = preg_replace('#[а-яёєїіА-ЯЁЄЇІ]#iu', '', $imgurl);
-			$imgurl   = str_replace([ ' +', ' ' ], [ '_', '' ], $imgurl);
+			$imgurl   = str_replace([
+				' +',
+				' '
+			], [
+				'_',
+				''
+			], $imgurl);
 		}
 		else
 		{
@@ -88,7 +94,7 @@ class JUImg
 
 		if( !empty($attr) && is_array($attr) )
 		{
-			foreach( $attr as $whk => $whv )
+			foreach ( $attr as $whk => $whv )
 			{
 				if( $whk === 'f' )
 				{
@@ -130,7 +136,7 @@ class JUImg
 		$md5 = [];
 		if( !empty($attr) && is_array($attr) )
 		{
-			foreach( $attr as $k => $v )
+			foreach ( $attr as $k => $v )
 			{
 				$f     = explode('_', $k);
 				$k     = $f[ 0 ];
@@ -140,7 +146,7 @@ class JUImg
 
 		$target = $subfolder . '/' . strtolower(substr($imgurl, 0, 150)) . '-' . md5($url . implode('.', $md5)) . $fext;
 
-		$this->MakeDirectory($dir = $this->path . '/' . $subfolder, $mode = 0777);
+		$this->make_dir($dir = $this->path . '/' . $subfolder);
 
 		if( file_exists($this->path . '/' . $target) )
 		{
@@ -148,43 +154,10 @@ class JUImg
 		}
 		else
 		{
-			$outpute = $this->Create($url, $img_cache, $target, $attr);
+			$outpute = $this->create($url, $img_cache, $target, $attr);
 		}
 
 		return $outpute;
-	}
-
-	/**
-	 * @param $dir
-	 * @param $mode
-	 *
-	 * @return bool
-	 *
-	 * @since  2.0
-	 */
-	public function MakeDirectory($dir, $mode)
-	{
-		if( @mkdir($dir, $mode) || is_dir($dir) )
-		{
-			$indexfile    = $dir . '/index.html';
-			$indexcontent = '<!DOCTYPE html><title></title>';
-
-			if( !file_exists($indexfile) )
-			{
-				$file = fopen($indexfile, 'wb');
-				fwrite($file, $indexcontent);
-				fclose($file);
-			}
-
-			return true;
-		}
-
-		if( !$this->MakeDirectory(dirname($dir), $mode) )
-		{
-			return false;
-		}
-
-		return @mkdir($dir, $mode);
 	}
 
 	/**
@@ -197,7 +170,7 @@ class JUImg
 	 *
 	 * @since  2.0
 	 */
-	public function Create($url, $img_cache, $target, array $attr = [])
+	public function create($url, $img_cache, $target, array $attr = [])
 	{
 		$phpThumb = new JUThumbs();
 
@@ -221,7 +194,7 @@ class JUImg
 			$cover = [];
 			if( !empty($attr) && is_array($attr) )
 			{
-				foreach( $attr as $whk => $whv )
+				foreach ( $attr as $whk => $whv )
 				{
 					if( $whk === 'cover' )
 					{
@@ -238,13 +211,13 @@ class JUImg
 			$phpThumb->setSourceFilename($url);
 		}
 
-		$phpThumb->setParameter('q', '80');
+		$phpThumb->setParameter('q', '82');
 		$phpThumb->setParameter('aoe', '1');
 		$phpThumb->setParameter('f', 'jpg');
 
 		if( is_array($attr) )
 		{
-			foreach( $attr as $k => $v )
+			foreach ( $attr as $k => $v )
 			{
 				$f = explode('_', $k);
 				$k = $f[ 0 ];
@@ -275,5 +248,38 @@ class JUImg
 		}
 
 		return $outpute;
+	}
+
+	/**
+	 * @param $dir
+	 * @param $mode
+	 *
+	 * @return bool
+	 *
+	 * @since  2.0
+	 */
+	public function make_dir($dir, $mode = 0777)
+	{
+		if( @mkdir($dir, $mode) || is_dir($dir) )
+		{
+			$indexfile    = $dir . '/index.html';
+			$indexcontent = '<!DOCTYPE html><title></title>';
+
+			if( !file_exists($indexfile) )
+			{
+				$file = fopen($indexfile, 'wb');
+				fwrite($file, $indexcontent);
+				fclose($file);
+			}
+
+			return true;
+		}
+
+		if( !$this->make_dir(dirname($dir), $mode) )
+		{
+			return false;
+		}
+
+		return @mkdir($dir, $mode);
 	}
 }
