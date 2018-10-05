@@ -50,7 +50,7 @@ class JUImg
 			$url = rawurldecode($url);
 
 			$_error = 0;
-			if( preg_match('#^(http|https|ftp)://#i', $url) )
+			if( strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0 )
 			{
 				$headers = @get_headers($url);
 				if( strpos($headers[ 0 ], '200') === false )
@@ -275,7 +275,7 @@ class JUImg
 			return true;
 		}
 
-		if( !$this->make_dir(dirname($dir), $mode) )
+		if( !$this->make_dir(dirname($dir)) )
 		{
 			return false;
 		}
