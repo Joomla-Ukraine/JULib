@@ -1,3 +1,7 @@
+# New version JULib => JUImage
+
+Use new version [JUImage](https://github.com/Joomla-Ukraine/JUImage) with WebP and namespase support!
+
 # JULib
 
 Create thumbs for Joomla! extension or stand-alone use.
