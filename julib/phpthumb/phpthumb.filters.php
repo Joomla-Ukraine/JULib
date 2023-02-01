@@ -557,7 +557,7 @@ class phpthumb_filters {
 		// method 0 stretches according to RGB colors. Gives a more conservative stretch.
 		// method 1 band stretches according to grayscale which is color-biased (59% green, 30% red, 11% blue). May give a punchier / more aggressive stretch, possibly appearing over-saturated
 		$Analysis = $this->HistogramAnalysis($gdimg, true);
-		$keys = array('r'=>'red', 'g'=>'green', 'b'=>'blue', 'a'=>'alpha', '*'=>(($method == 0) ? 'all' : 'gray'));
+		$keys = array('r'=>'red', 'g'=>'green', 'b'=>'blue', 'a'=>'alpha', '*'=> ($method == 0) ? 'all' : 'gray' );
 		$band = $band[ 0 ];
 		if (!isset($keys[$band])) {
 			return false;
@@ -752,7 +752,7 @@ class phpthumb_filters {
 	}
 
 
-	public static function ImprovedImageRotate(&$gdimg_source, $rotate_angle=0, $config_background_hexcolor='FFFFFF', $bg=null, &$phpThumbObject) {
+	public static function ImprovedImageRotate(&$gdimg_source, $rotate_angle, $config_background_hexcolor, $bg, &$phpThumbObject) {
 		while ($rotate_angle < 0) {
 			$rotate_angle += 360;
 		}
@@ -876,7 +876,7 @@ class phpthumb_filters {
 		for ($x = 0; $x < $ImageSX; $x++) {
 			for ($y = 0; $y < $ImageSY; $y++) {
 				$currentPixel = phpthumb_functions::GetPixelColor($gdimg, $x, $y);
-				$newColor = phpthumb_functions::ImageColorAllocateAlphaSafe($gdimg, (~$currentPixel['red'] & 0xFF), (~$currentPixel['green'] & 0xFF), (~$currentPixel['blue'] & 0xFF), $currentPixel['alpha']);
+				$newColor = phpthumb_functions::ImageColorAllocateAlphaSafe($gdimg, ~$currentPixel[ 'red'] & 0xFF, ~$currentPixel[ 'green'] & 0xFF, ~$currentPixel[ 'blue'] & 0xFF, $currentPixel[ 'alpha']);
 				imagesetpixel($gdimg, $x, $y, $newColor);
 			}
 		}
@@ -1250,10 +1250,10 @@ class phpthumb_filters {
 				$y1 = $text_origin_y + $TTFbox[1];
 				$x2 = $text_origin_x + $min_x + $text_width;
 				$y2 = $text_origin_y + $TTFbox[1] - $text_height;
-				$x_TL = false !== stripos($fillextend, "x") ?               0 : min($x1, $x2);
-				$y_TL = false !== stripos($fillextend, "y") ?               0 : min($y1, $y2);
-				$x_BR = false !== stripos($fillextend, "x") ? imagesx($gdimg) : max($x1, $x2);
-				$y_BR = false !== stripos($fillextend, "y") ? imagesy($gdimg) : max($y1, $y2);
+				$x_TL = false !== stripos($fillextend, 'x') ?               0 : min($x1, $x2);
+				$y_TL = false !== stripos($fillextend, 'y') ?               0 : min($y1, $y2);
+				$x_BR = false !== stripos($fillextend, 'x') ? imagesx($gdimg) : max($x1, $x2);
+				$y_BR = false !== stripos($fillextend, 'y') ? imagesy($gdimg) : max($y1, $y2);
 				$this->DebugMessage('WatermarkText() calling imagefilledrectangle($gdimg, '.$x_TL.', '.$y_TL.', '.$x_BR.', '.$y_BR.', $text_color_background)', __FILE__, __LINE__);
 				imagefilledrectangle($gdimg, $x_TL, $y_TL, $x_BR, $y_BR, $text_color_background);
 
@@ -1424,7 +1424,7 @@ class phpthumb_filters {
 
 	public function WatermarkOverlay(&$gdimg_dest, &$img_watermark, $alignment='*', $opacity=50, $margin_x=5, $margin_y=null) {
 
-		if (is_resource($gdimg_dest) && is_resource($img_watermark)) {
+		if ((is_resource($gdimg_dest) || (is_object($gdimg_dest) && $gdimg_dest instanceOf \GdImage)) && (is_resource($img_watermark) || (is_object($img_watermark) && $img_watermark instanceOf \GdImage))) {
 			$img_source_width          = imagesx($gdimg_dest);
 			$img_source_height         = imagesy($gdimg_dest);
 			$watermark_source_width    = imagesx($img_watermark);
