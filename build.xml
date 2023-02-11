@@ -1,6 +1,6 @@
 <project name="julib" default="dist" basedir=".">
 
-    <property name="VERSION" value="2.10.0"/>
+    <property name="VERSION" value="2.10.1"/>
 
     <tstamp>
         <format property="DATE" pattern="%d.%m.%Y" />
